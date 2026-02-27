@@ -1,34 +1,47 @@
-cat > .gitignore << 'EOF'
-# deps
+# =========================
+# Dependencies
+# =========================
 node_modules/
 **/node_modules/
-server/node_modules/
 
-# env
-.env
-**/.env
-# Next env files
-**/.env.local
-**/.env.*local
+# =========================
+# Environment variables
+# =========================
 .env
 .env.*
+**/.env
+**/.env.*
+**/.env.local
+**/.env.*local
+!**/.env.example
 
-# uploads
+# =========================
+# Uploads
+# =========================
 server/uploads/
 **/uploads/
 
-# build
+# =========================
+# Build outputs
+# =========================
 .next/
+**/.next/
 dist/
 build/
 out/
+coverage/
+**/.turbo/
 
-# logs
+# =========================
+# Logs
+# =========================
+*.log
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
-# editor / OS
+# =========================
+# Editor / OS
+# =========================
 .vscode/
 .DS_Store
-EOF
