@@ -70,42 +70,6 @@ exports.register = async (req, res) => {
 };
 
 // ? This is (Token in json version of signing in)
-/* exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    //find User
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-    // Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-    // Create token
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    );
-
-    res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
- */
 
 //? This is the (cookie version of signing in )
 
@@ -123,7 +87,7 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
-      return res.status(404).json({
+      return res.status(401).json({
         success: false,
         message: 'Invalid credentials',
       });
@@ -140,7 +104,7 @@ exports.login = async (req, res) => {
 
     const token = signToken({ id: user._id.toString(), role: user.role });
 
-    res.cookie('access_token', token, cookieOptions);
+    res.cookie('access_token', token, cookieOptions());
 
     return res.status(200).json({
       success: true,

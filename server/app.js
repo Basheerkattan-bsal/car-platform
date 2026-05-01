@@ -33,6 +33,7 @@ app.use('/api/services', require('./routes/serviceRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/cars', require('./routes/carPublicRoutes'));
 app.use('/api/dealer/cars', require('./routes/carDealerRoutes'));
+app.use('/api/favorites', require('./routes/favoriteRoutes'));
 
 //Test route
 app.get('/', (req, res) => {

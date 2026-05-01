@@ -16,9 +16,15 @@ export default function LoginPage() {
     if (!hasHydrated) return;
     if (!user) return;
 
-    if (user.role === 'admin') router.replace('/admin');
-    else if (user.role === 'dealer') router.replace('/dealer');
-    else router.replace('/');
+    if (user.role === 'admin') {
+      router.replace('/admin');
+    } else if (user.role === 'dealer') {
+      router.replace('/dealer');
+    } else if (user.role === 'buyer') {
+      router.replace('/buyer');
+    } else {
+      router.replace('/');
+    }
   }, [hasHydrated, user, router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -31,11 +37,17 @@ export default function LoginPage() {
 
     try {
       const user = await login({ email, password });
-      setUser(user); //Stopped Here 07.02.26 (Wiring LOGIN page) //TODO: Complete the login page logic!!
+      setUser(user); //Stopped Here 07.02.26 (Wiring LOGIN page)
 
-      if (user.role === 'admin') router.push('/admin');
-      if (user.role === 'dealer') router.push('/dealer');
-      else router.push('/');
+      if (user.role === 'admin') {
+        router.push('/admin');
+      } else if (user.role === 'dealer') {
+        router.push('/dealer');
+      } else if (user.role === 'buyer') {
+        router.push('/buyer');
+      } else {
+        router.push('/');
+      }
     } catch (err: any) {
       setError(err.message);
     }
@@ -43,9 +55,7 @@ export default function LoginPage() {
   return (
     <main className='min-h-screen flex items-center justify-center'>
       <form onSubmit={handleSubmit} className='w-96 space-y-4'>
-        <h1 className='' text-2x1>
-          Login
-        </h1>
+        <h1 className='text-2x1'>Login</h1>
         {error && <p className='text-red-500'>{error}</p>}
         <input name='email' placeholder='Email' className='w-full border p-2' />
         <input

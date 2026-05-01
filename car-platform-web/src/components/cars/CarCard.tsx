@@ -1,41 +1,101 @@
+import Image from 'next/image';
 import Link from 'next/link';
-const API_ORIGIN =
-  process.env.NEXT_PUBLIC_API_ORIGIN || 'http://localhost:5050';
 
-type carCardProps = {
-  id: string;
-  title: string;
-  price: number;
-  year?: number;
-  mainImage?: string | null;
+import type { Car } from '@/types/car';
+import React from 'react';
+
+type CarCardProps = {
+  car: Car;
+  action?: React.ReactNode;
 };
 
-export function CarCard({ id, title, price, year, mainImage }: carCardProps) {
+function formatPrice(price: number) {
+  return new Intl.NumberFormat('en-DE', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+  }).format(price);
+}
+
+function formatMileage(mileage?: number) {
+  if (typeof mileage !== 'number') return null;
+
+  return `${mileage.toLocaleString()} km`;
+}
+
+export default function CarCard({ car, action }: CarCardProps) {
+  const imageSrc = car.mainImage || car.images?.[0] || '/hero-car.jpg';
+  const carHref = `/cars/${car._id}`;
+  const mileageText = formatMileage(car.mileage);
+
   return (
-    <li className='rounded-2xl border bg-white/50 shadow-sm transition hover:shadow-md'>
-      <Link href={`/cars/${id}`} className='block p-4'>
-        <div className='aspect-[16/10] w-full overflow-hidden rounded-xl bg-black/5'>
-          {mainImage ? (
-            <img
-              src={`${API_ORIGIN}${mainImage}`}
-              alt={title}
-              className='h-full object-cover'
-            />
+    <article className='group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 transition hover:border-white/20 hover:bg-white/[0.07]'>
+      <Link href={carHref} className='block'>
+        <div className='relative aspect-[4/3] overflow-hidden'>
+          <Image
+            src={imageSrc}
+            alt={car.title}
+            fill
+            className='object-cover transition duration-500 group-hover:scale-[1.03]'
+          />
+
+          <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent' />
+
+          {car.condition ? (
+            <div className='absolute left-4 top-4 rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white backdrop-blur'>
+              {car.condition}
+            </div>
           ) : null}
         </div>
 
-        <div className='mt-3 flex items-start justify-between gap-3'>
-          <div className='min-w-0'>
-            <div className='truncate front-semibold'>{title}</div>
-            <div className='text-sm opacity-70'>
-              {year ? `Year ${year}` : ' '}
+        <div className='space-y-4 p-5'>
+          <div className='flex items-start justify-between gap-4'>
+            <div>
+              <h3 className='text-lg font-semibold text-white'>{car.title}</h3>
+
+              {(car.brand || car.location) && (
+                <p className='mt-1 text-sm text-zinc-400'>
+                  {[car.brand, car.location].filter(Boolean).join(' • ')}
+                </p>
+              )}
+            </div>
+
+            <div className='shrink-0 rounded-full border border-white/10 bg-black/30 px-3 py-1 text-sm font-medium text-white'>
+              {formatPrice(car.price)}
             </div>
           </div>
-          <div className='shrink-0 text-right font-semibold'>
-            {price.toLocaleString()} €
+
+          <div className='flex flex-wrap gap-2'>
+            {car.year ? (
+              <span className='rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300'>
+                {car.year}
+              </span>
+            ) : null}
+
+            {mileageText ? (
+              <span className='rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300'>
+                {mileageText}
+              </span>
+            ) : null}
+
+            {car.fuelType ? (
+              <span className='rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300'>
+                {car.fuelType}
+              </span>
+            ) : null}
+
+            {car.transmission ? (
+              <span className='rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300'>
+                {car.transmission}
+              </span>
+            ) : null}
           </div>
         </div>
       </Link>
-    </li>
+
+      {action ? (
+        <div className='border-t border-white/10 bg-white/10 p-5'>{action}</div>
+      ) : null}
+    </article>
   );
 }

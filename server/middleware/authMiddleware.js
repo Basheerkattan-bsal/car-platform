@@ -13,7 +13,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch {
-    throw new AppError('Not authorized, 401');
+    throw new AppError('Not authorized', 401);
   }
 
   const user = await User.findById(decoded.id).select('_id name email role');

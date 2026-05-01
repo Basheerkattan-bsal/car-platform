@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import '../styles/globals.css';
 import Providers from './providers';
 import AuthHydrator from '../components/auth/AuthHydrator';
-import AppHeader from '@/components/layout/AppHeader';
 
 export const metadata: Metadata = {
   title: 'Car Platform',
@@ -16,11 +15,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html>
+    <html lang='en'>
       <body>
         <Providers>
           <AuthHydrator />
-          <AppHeader />
           {children}
         </Providers>
       </body>

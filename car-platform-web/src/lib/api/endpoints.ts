@@ -33,9 +33,14 @@ export const endpoints = {
     my: '/dealer/cars/me',
     create: '/dealer/cars',
     byId: (id: string) => `/dealer/cars/${id}`,
-    publish: (id: string) => `/dealer/cars{id}/publish`,
+    publish: (id: string) => `/dealer/cars/${id}/publish`,
     unpublish: (id: string) => `/dealer/cars/${id}/unpublish`,
     uploadImage: (id: string) => `/dealer/cars/${id}/images`,
     mainImage: (id: string) => `/dealer/cars/${id}/main-image`,
+  },
+
+  favorites: {
+    me: '/favorites/me',
+    toggle: (carId: string) => `favorites/${carId}`,
   },
 } as const;

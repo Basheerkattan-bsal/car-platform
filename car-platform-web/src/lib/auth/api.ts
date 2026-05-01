@@ -1,4 +1,4 @@
-import { api } from '@/lib/api/client';
+import { api } from '@/lib/api/browser';
 import { endpoints } from '@/lib/api/endpoints';
 import type { AuthUser } from './types';
 
@@ -19,10 +19,6 @@ type UserFromApi = {
 const allowedRoles = ['buyer', 'dealer', 'admin'] as const; //<====
 type LoginResponse = { user: UserFromApi };
 type MeResponse = { user: UserFromApi };
-
-/* type AnyLoginResponse =
-  | { token: string; user: any }
-  | { data: { token: string; user: any } }; */
 
 function toAuthUser(user: UserFromApi): AuthUser {
   const id = user.id ?? user._id;

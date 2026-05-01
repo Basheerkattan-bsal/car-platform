@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/store/auth';
 import { logout } from '@/lib/auth/api';
+import Link from 'next/link';
 
 export default function AuthStatus() {
   const router = useRouter();
@@ -24,9 +25,9 @@ export default function AuthStatus() {
   if (!user) {
     return (
       <div className='text-sm opacity-80'>
-        <a className='underline' href='/login'>
+        <Link className='underline' href='/login'>
           Login
-        </a>
+        </Link>
       </div>
     );
   }
@@ -36,7 +37,11 @@ export default function AuthStatus() {
         <div className='font-medium'>{user.name}</div>
         <div className='opacity-70'>{user.role}</div>
       </div>
-      <button onClick={handleLogout} className='rounded-md border px-3 py-1'>
+      <button
+        type='button'
+        onClick={handleLogout}
+        className='rounded-md border px-3 py-1'
+      >
         Logout
       </button>
     </div>

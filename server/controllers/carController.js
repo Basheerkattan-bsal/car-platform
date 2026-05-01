@@ -168,7 +168,10 @@ exports.getCarByIdPublic = async (req, res) => {
         message: 'Invalid car id',
       });
     }
-    const car = await Car.findOne({ _id: carId, isPublished: true });
+    const car = await Car.findOne({ _id: carId, isPublished: true }).populate(
+      'dealer',
+      'name email role'
+    );
     if (!car) {
       return res.status(404).json({
         success: false,
@@ -176,9 +179,25 @@ exports.getCarByIdPublic = async (req, res) => {
       });
     }
 
+    const similarFilter = {
+      _id: { $ne: car._id },
+      isPublished: true,
+    };
+
+    if (car.brand) {
+      similarFilter.brand = car.brand;
+    }
+
+    const similarCars = await Car.find(similarFilter)
+      .sort({ createdAt: -1 })
+      .limit(4)
+      .select(
+        'title price mainImage brand year mileage owner condition createdAt dealer'
+      );
     return res.status(200).json({
       success: true,
       data: car,
+      similarCars,
     });
   } catch (error) {
     return res.status(500).json({
@@ -187,7 +206,6 @@ exports.getCarByIdPublic = async (req, res) => {
     });
   }
 };
-
 exports.createCar = async (req, res) => {
   try {
     const dealerProfile = await DealerProfile.findOne({ user: req.user.id });

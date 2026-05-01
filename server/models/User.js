@@ -29,6 +29,12 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       select: false,
     },
+
+    favorites: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Car' }],
+      default: [],
+    },
+
     role: {
       type: String,
       enum: {
@@ -43,14 +49,12 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   // Only hash if the password is created/changed
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password')) return;
 
   const slat = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-
-  next();
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {

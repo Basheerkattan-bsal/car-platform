@@ -1,129 +1,107 @@
-import { api } from '@/lib/api/client';
-import { endpoints } from '@/lib/api/endpoints';
-import { CarCard } from '@/components/cars/CarCard';
-import { Pagination } from '@/components/ui/Pagination';
-import { CarsFilters } from '@/components/cars/CarsFilters';
 import Link from 'next/link';
 
-type Car = {
-  _id: string;
-  title: string;
-  price: number;
-  year: number;
-  mainImage?: string;
+import { getBrandsServer } from '@/lib/api/car';
+import { getCarsServer } from '@/lib/api/car';
+import { Car } from '@/types/car';
+
+type Props = {
+  searchParams?: Promise<{
+    page?: string;
+    brand?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    minYear?: string;
+    maxYear?: string;
+    sort?: string;
+  }>;
 };
 
-type Search = {
-  page?: string;
-  brand?: string;
-  minPrice?: string;
-  maxPrice?: string;
-  minYear?: string;
-  maxYear?: string;
-  sort?: string;
-};
-
-function qs(params: Record<string, string | undefined>) {
-  const sp = new URLSearchParams();
-  for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && String(v).trim() !== '') sp.set(k, String(v));
+function formatPrice(value?: number) {
+  if (typeof value !== 'number') {
+    return 'Price on request';
   }
-  const s = sp.toString();
-  return s ? `?${s}` : '';
-}
-const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN;
 
-export default async function CarsPage({
-  searchParams,
-}: {
-  searchParams: Promise<Search>;
-}) {
-  const q = await searchParams;
-  const page = Math.max(Number(q.page || '1') || 1, 1);
-  const query = qs({
-    page: String(page),
-    brand: q.brand,
-    minPrice: q.minPrice,
-    maxPrice: q.maxPrice,
-    minYear: q.minYear,
-    maxYear: q.maxYear,
-    sort: q.sort,
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+export default async function CarsPage({ searchParams }: Props) {
+  const params = (await searchParams) ?? {};
+
+  const carResponse = await getCarsServer({
+    page: params.page ? Number(params.page) : 1,
+    brand: params.brand,
+    minPrice: params.minPrice,
+    maxPrice: params.maxPrice,
+    minYear: params.minYear,
+    maxYear: params.maxYear,
+    sort: params.sort,
   });
 
-  const [carsRes, brandsRes] = await Promise.all([
-    api<{
-      success: boolean;
-      data: Car[];
-      pagination: {
-        page: number;
-        limit: number;
-        totalCars: number;
-        totalPages: number;
-      };
-    }>(`${endpoints.cars.list}${query}`),
+  const brandsResponse = await getBrandsServer();
 
-    api<{ success: boolean; data: string[] }>(endpoints.cars.brands),
-  ]);
-
-  const res = carsRes;
-  const brands = brandsRes.data;
-
-  const makeHref = (p: number) =>
-    `/cars${qs({
-      ...q,
-      page: String(Math.max(p, 1)),
-    })}`;
-
-  const total = res.pagination.totalCars;
+  const cars: Car[] = carResponse.data;
+  const brands = brandsResponse.data;
+  const pagination = carResponse.pagination;
 
   return (
-    <main className='mx-auto max-w-6xl p-6'>
-      <header className='flex items-end justify-between gap-4'>
-        <div>
-          <h1 className='text-3xl font-bold'>Cars</h1>
-          <div className='mt-2 text-sm opacity-70'>
-            {total === 0
-              ? 'No cars found'
-              : `${total} car${total > 1 ? 's' : ''} found`}
-          </div>
-          <p className='mt-1 text-sm opacity-70'>
-            {res.pagination.totalCars} results
-          </p>
+    <main className='mx-auto max-w-6xl px-6 py-8'>
+      <section className='mb-8'>
+        <h1 className='text-3xl font-semibold'>Browse Cars</h1>
+
+        <p className='mt-2 text-sm text-neutral-600'>
+          Explore available listing on Carvia.
+        </p>
+      </section>
+
+      <section className='mb-8'>
+        <h2 className='mb-3 text-lg font-medium'>Brands</h2>
+
+        <div className='flex flex-wrap gap-2'>
+          {brands.map(brand => (
+            <Link
+              key={brand}
+              href={`/cars?brand=${encodeURIComponent(brand)}`}
+              className='rounded border px-3 py-1 text-sm'
+            >
+              {brand}
+            </Link>
+          ))}
         </div>
-      </header>
+      </section>
 
-      {/* Filters */}
+      <section className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+        {cars.map(car => (
+          <article key={car._id} className='rounded-lg border p-4'>
+            <div className='mb-3 aspect-[4/3] rounded bg-neutral-100' />
 
-      <CarsFilters
-        brands={brands}
-        initial={{
-          brand: q.brand ?? '',
-          minPrice: q.minPrice ?? '',
-          maxPrice: q.maxPrice ?? '',
-          minYear: q.minYear ?? '',
-          maxYear: q.maxYear ?? '',
-          sort: q.sort ?? 'newest',
-        }}
-      />
+            <h3 className='text-lg font-semibold'>{car.title}</h3>
 
-      <ul className='mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-        {res.data.map(c => (
-          <CarCard
-            key={c._id}
-            id={c._id}
-            title={c.title}
-            price={c.price}
-            year={c.year}
-            mainImage={c.mainImage ?? null}
-          />
+            <p className='mt-1 text-sm text-neutral-600'>
+              {car.brand ?? 'Unknown brand'} . {car.year ?? 'Unknown year'}
+            </p>
+
+            <p className='mt-3 font-medium'>{formatPrice(car.price)}</p>
+
+            <Link
+              href={`/cars/${car._id}`}
+              className='mt-4 inline-block text-sm underline'
+            >
+              View details
+            </Link>
+          </article>
         ))}
-      </ul>
+      </section>
 
-      <Pagination
-        page={res.pagination.page}
-        totalPages={res.pagination.totalPages}
-        makeHref={makeHref}
-      />
+      <section className='mt-8 text-sm text-neutral-600'>
+        <p>
+          Page {pagination.page} of {pagination.totalPages}
+        </p>
+        <p>Total cars : {pagination.totalCars}</p>
+      </section>
     </main>
   );
 }
