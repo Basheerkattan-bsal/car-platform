@@ -34,26 +34,12 @@ router.post(
   uploadCarImages,
   uploadMyCarImages
 );
-router.put(
-  '/:id',
-  protect,
-  authorize('dealer', 'admin'),
-  checkCarOwnerShip,
-  updateCar
-);
+
 router.put('/:id/publish', protect, authorize('dealer'), publishMyCar);
 router.put('/:id/unpublish', protect, authorize('dealer'), unpublishMyCar);
 router.put('/:id', protect, authorize('dealer'), updateMyCar);
 router.put('/:id/main-image', protect, authorize('dealer'), setCarMainImage);
 router.delete('/:id', protect, authorize('dealer'), deleteMyCar);
-
-router.delete(
-  '/:id',
-  protect,
-  authorize('dealer', 'admin'),
-  checkCarOwnerShip,
-  deleteCar
-);
 
 router.delete('/:id/images', protect, authorize('dealer'), deleteMyCarImage);
 module.exports = router;

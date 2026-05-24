@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import type { Car } from '@/types/car';
@@ -8,6 +7,9 @@ type CarCardProps = {
   car: Car;
   action?: React.ReactNode;
 };
+
+const API_ORIGIN =
+  process.env.NEXT_PUBLIC_API_ORIGIN || 'http://localhost:5050';
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat('en-DE', {
@@ -24,20 +26,30 @@ function formatMileage(mileage?: number) {
 }
 
 export default function CarCard({ car, action }: CarCardProps) {
-  const imageSrc = car.mainImage || car.images?.[0] || '/hero-car.jpg';
+  const rawImage = car.mainImage || car.images?.[0] || '';
+
+  const imageSrc = rawImage.startsWith('/uploads')
+    ? `${API_ORIGIN}${rawImage}`
+    : rawImage || '';
+
   const carHref = `/cars/${car._id}`;
   const mileageText = formatMileage(car.mileage);
 
   return (
     <article className='group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 transition hover:border-white/20 hover:bg-white/[0.07]'>
       <Link href={carHref} className='block'>
-        <div className='relative aspect-[4/3] overflow-hidden'>
-          <Image
-            src={imageSrc}
-            alt={car.title}
-            fill
-            className='object-cover transition duration-500 group-hover:scale-[1.03]'
-          />
+        <div className='h-56 overflow-hidden bg-black/30'>
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={car.title}
+              className='h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]'
+            />
+          ) : (
+            <div className='flex h-full items-center justify-center text-sm text-zinc-400'>
+              No image yet
+            </div>
+          )}
 
           <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent' />
 

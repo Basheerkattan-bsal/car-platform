@@ -1,6 +1,5 @@
-import '../styles/globals.css';
+import './globals.css';
 import type { Metadata } from 'next';
-import '../styles/globals.css';
 import Providers from './providers';
 import AuthHydrator from '../components/auth/AuthHydrator';
 

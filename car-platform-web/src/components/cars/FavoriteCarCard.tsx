@@ -1,12 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Car } from '@/types/car';
-
+import type { Car } from '@/types/car';
 import { toggleFavoriteBrowser } from '@/lib/api/favorites';
 
 type Props = {
@@ -21,16 +19,22 @@ export default function FavoriteCarCard({ car }: Props) {
   const [loading, setLoading] = useState(false);
   const [removed, setRemoved] = useState(false);
 
-  const imageSrc = car.mainImage || car.images?.[0] || '/hero-car.jpg';
+  const rawImage = car.mainImage || car.images?.[0] || '';
+
+  const safeImage =
+    rawImage.startsWith('/uploads') && !rawImage.includes('$(ext')
+      ? `${API_ORIGIN}${rawImage}`
+      : '';
 
   async function handleRemove(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Button clicked');
 
     try {
       setLoading(true);
+
       await toggleFavoriteBrowser(car._id);
+
       setRemoved(true);
       router.refresh();
     } catch (error) {
@@ -39,51 +43,46 @@ export default function FavoriteCarCard({ car }: Props) {
       setLoading(false);
     }
   }
+
   if (removed) {
     return null;
   }
 
   return (
     <article className='overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5'>
-      <div>
-        <Link href={`/cars/${car._id}`} className='group block'>
-          <div className='relative aspect-[4/3] overflow-hidden'>
-            <Image
-              src={
-                imageSrc.startsWith('/uploads')
-                  ? `${API_ORIGIN}${imageSrc}`
-                  : imageSrc
-              }
-              alt={car.title}
-              fill
-              className='object-cover transition duration-500 group-hover:scale-[1.03]'
-            />
+      <div className='h-56 overflow-hidden bg-black/30'>
+        {safeImage ? (
+          <img
+            src={safeImage}
+            alt={car.title}
+            className='h-full w-full object-cover'
+          />
+        ) : (
+          <div className='flex h-full items-center justify-center text-sm text-zinc-400'>
+            No image yet
           </div>
-
-          <div className='space-y-2 p-5'>
-            <h3 className='text-lg font-semibold text-white'>{car.title}</h3>
-
-            <p className='text-sm text-zinc-400'>
-              {car.brand ?? 'Unknown brand'}
-
-              {car.year ? ` · ${car.year}` : ''}
-            </p>
-
-            <p className='text-sm font-medium text-white'>
-              {car.price.toLocaleString()} €
-            </p>
-          </div>
-        </Link>
+        )}
       </div>
 
-      <p className='mb-2 text-xs text-red-400'>ACTION AREA</p>
+      <div className='space-y-2 p-5'>
+        <Link href={`/cars/${car._id}`} className='block'>
+          <h3 className='text-lg font-semibold text-white'>{car.title}</h3>
+        </Link>
 
-      <div className='border-t border-white/10 p-5'>
+        <p className='text-sm text-zinc-400'>
+          {car.brand ?? 'Unknown brand'}
+          {car.year ? ` · ${car.year}` : ''}
+        </p>
+
+        <p className='text-sm font-medium text-white'>
+          {car.price.toLocaleString()} €
+        </p>
+
         <button
           type='button'
           onClick={handleRemove}
           disabled={loading}
-          className='w-full rounded-xl border border-white/10 px-4 py-3 text-sm text-white hover:bg-white/10 disabled:opacity-60'
+          className='mt-4 w-full rounded-xl border border-white/10 px-4 py-3 text-sm text-white hover:bg-white/10 disabled:opacity-60'
         >
           {loading ? 'Removing...' : 'Remove from favorites'}
         </button>

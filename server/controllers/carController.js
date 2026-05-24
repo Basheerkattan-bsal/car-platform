@@ -112,7 +112,7 @@ exports.getCarsPublic = async (req, res) => {
         .skip(skip)
         .limit(limit)
         .select(
-          'title price mainImage brand year mileage owner condition createdAt dealer'
+          'title price mainImage images brand year mileage owner condition createdAt dealer'
         ),
     ]);
     const totalPages = totalCars === 0 ? 0 : Math.ceil(totalCars / limit);
@@ -192,7 +192,7 @@ exports.getCarByIdPublic = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(4)
       .select(
-        'title price mainImage brand year mileage owner condition createdAt dealer'
+        'title price mainImage images brand year mileage owner condition createdAt dealer'
       );
     return res.status(200).json({
       success: true,

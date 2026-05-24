@@ -14,6 +14,7 @@ export type Car = {
   buyer?: string | Buyer;
   admin?: string | Admin;
   owner?: string;
+  isPublished?: false;
 
   mainImage?: string;
   images?: string[];

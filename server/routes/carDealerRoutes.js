@@ -35,17 +35,23 @@ router.get('/my', getMyCars);
 // POST /api/dealer/cars
 router.post('/', createCar);
 
+// PUT /api/dealer/cars/:id/publish
+router.put('/:id/publish', checkCarOwnerShip, publishMyCar);
+// PUT /api/dealer/cars/:id/unpublish
+
+router.put('/:id/unpublish', checkCarOwnerShip, unpublishMyCar);
+// PUT /api/dealer/cars/:id/main-image
+
+router.put('/:id/main-image', checkCarOwnerShip, setCarMainImage);
+// DELETE /api/dealer/cars/:id/images
+
+router.delete('/:id/images', checkCarOwnerShip, deleteMyCarImage);
+
 // PUT /api/dealer/cars/:id
 router.put('/:id', checkCarOwnerShip, updateMyCar);
 
 // DELETE /api/dealer/cars/:id
 router.delete('/:id', checkCarOwnerShip, deleteMyCar);
-
-// PUT /api/dealer/cars/:id/publish
-router.put('/:id/publish', checkCarOwnerShip, publishMyCar);
-
-// PUT /api/dealer/cars/:id/unpublish
-router.put('/:id/unpublish', checkCarOwnerShip, unpublishMyCar);
 
 // POST /api/dealer/cars/:id/images
 router.post(
@@ -54,11 +60,5 @@ router.post(
   uploadCarImages,
   uploadMyCarImages
 );
-
-// DELETE /api/dealer/cars/:id/images
-router.delete('/:id/images', checkCarOwnerShip, deleteMyCarImage);
-
-// PUT /api/dealer/cars/:id/main-image
-router.put('/:id/main-image', checkCarOwnerShip, setCarMainImage);
 
 module.exports = router;

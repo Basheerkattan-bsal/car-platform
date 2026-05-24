@@ -31,7 +31,7 @@ const carSchema = new mongoose.Schema(
     },
     condition: {
       type: String,
-      enum: ['Smoker', 'NON-Smoker'],
+      enum: ['Smoker', 'Non-Smoker'],
       default: 'Smoker',
       required: true,
     },

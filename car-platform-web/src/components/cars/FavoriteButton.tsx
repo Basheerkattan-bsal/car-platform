@@ -20,8 +20,6 @@ export default function FavoriteButton({ carId, initialIsFavorite }: Props) {
     try {
       setLoading(true);
 
-      console.log('Toggling favorites for:', carId);
-
       const res = await toggleFavoriteBrowser(carId);
 
       console.log('Toggle favorite response', res);
