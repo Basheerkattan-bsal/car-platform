@@ -9,6 +9,16 @@ type Props = {
   initialIsFavorite: boolean;
 };
 
+function hasStatusCode(error: unknown, statusCode: number) {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'status' in error &&
+    typeof error.status === 'number' &&
+    error.status === statusCode
+  );
+}
+
 export default function FavoriteButton({ carId, initialIsFavorite }: Props) {
   const router = useRouter();
 
@@ -25,8 +35,8 @@ export default function FavoriteButton({ carId, initialIsFavorite }: Props) {
       console.log('Toggle favorite response', res);
 
       setIsFavorite(res.isFavorite);
-    } catch (error: any) {
-      if (error?.status === 401) {
+    } catch (error: unknown) {
+      if (hasStatusCode(error, 401)) {
         router.push('/login');
         return;
       }

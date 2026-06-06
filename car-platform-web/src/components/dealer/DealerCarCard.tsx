@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Car } from '@/types/car';
 import PublishToggleButton from './PublishToggleButton';
+import DeleteCarButton from './DeleteCarButton';
 
 type Props = {
   car: Car;
