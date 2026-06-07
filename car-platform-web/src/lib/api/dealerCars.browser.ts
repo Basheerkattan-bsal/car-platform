@@ -48,7 +48,7 @@ export async function uploadCarImagesBrowser(carId: string, files: File[]) {
   // NOTE: Do NOT set Content-Type header manually.
   // When you pass FormData, the browser sets it automatically including the boundary string.
   // Setting it manually breaks multipart parsing on the server.
-  const res = await fetch(`${API_BASE_URL}/cars/${carId}/images`, {
+  const res = await fetch(`${API_BASE_URL}/dealer/cars/${carId}/images`, {
     method: 'POST',
     credentials: 'include',
     body: formData,
@@ -66,7 +66,7 @@ export async function uploadCarImagesBrowser(carId: string, files: File[]) {
 // PERMANENT — removes a single image from a car by its URL path
 // The image URL is sent in the request body as JSON (DELETE with a body is valid HTTP)
 export async function deleteCarImageBrowser(carId: string, imageUrl: string) {
-  const res = await fetch(`${API_BASE_URL}/cars/${carId}/images`, {
+  const res = await fetch(`${API_BASE_URL}/dealer/cars/${carId}/images`, {
     method: 'DELETE',
     credentials: 'include',
     headers: {
@@ -87,7 +87,7 @@ export async function deleteCarImageBrowser(carId: string, imageUrl: string) {
 // PERMANENT — sets which image is the main/cover image for the car
 // Sends the image URL in the body; server validates it exists in car.images first
 export async function setCarMainImageBrowser(carId: string, imageUrl: string) {
-  const res = await fetch(`${API_BASE_URL}/cars/${carId}/main-image`, {
+  const res = await fetch(`${API_BASE_URL}/dealer/cars/${carId}/main-image`, {
     method: 'PUT',
     credentials: 'include',
     headers: {

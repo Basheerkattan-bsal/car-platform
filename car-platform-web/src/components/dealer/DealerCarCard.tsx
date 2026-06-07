@@ -2,13 +2,11 @@ import Link from 'next/link';
 import type { Car } from '@/types/car';
 import PublishToggleButton from './PublishToggleButton';
 import DeleteCarButton from './DeleteCarButton';
+import CarImageSlider from '@/components/ui/CarImageSlider';
 
 type Props = {
   car: Car;
 };
-
-const API_ORIGIN =
-  process.env.NEXT_PUBLIC_API_ORIGIN || 'http://localhost:5050';
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat('en-DE', {
@@ -19,29 +17,15 @@ function formatPrice(price: number) {
 }
 
 export default function DealerCarCard({ car }: Props) {
-  const rawImage = car.mainImage || car.images?.[0] || '';
-
-  const imageSrc = rawImage.startsWith('/uploads')
-    ? `${API_ORIGIN}${rawImage}`
-    : rawImage;
-
   const isPublished = Boolean(car.isPublished);
 
   return (
     <article className='flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm'>
-      <div className='h-48 overflow-hidden bg-black/30'>
-        {imageSrc ? (
-          <img
-            src={imageSrc}
-            alt={car.title}
-            className='h-full w-full object-cover'
-          />
-        ) : (
-          <div className='flex h-full items-center justify-center text-sm text-zinc-400'>
-            No image
-          </div>
-        )}
-      </div>
+      <CarImageSlider
+        images={car.images || []}
+        mainImage={car.mainImage}
+        alt={car.title}
+      />
       <div className='flex flex-1 flex-col space-y-4 p-5'>
         <div className='flex items-start justify-between gap-4'>
           <div>
