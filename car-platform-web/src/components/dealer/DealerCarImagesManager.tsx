@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+
 import type { Car } from '@/types/car';
 import {
   uploadCarImagesBrowser,
@@ -74,9 +74,7 @@ export default function DealerCarImagesManager({
         setMainImage(result.mainImage);
       }
 
-      setSuccess(
-        `${fileArray.length} image(s) uploaded successfully`,
-      );
+      setSuccess(`${fileArray.length} image(s) uploaded successfully`);
 
       if (onImagesUpdated) {
         onImagesUpdated(result);
@@ -115,9 +113,7 @@ export default function DealerCarImagesManager({
 
       router.refresh();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to delete image',
-      );
+      setError(err instanceof Error ? err.message : 'Failed to delete image');
     } finally {
       setLoading(false);
     }
@@ -139,9 +135,7 @@ export default function DealerCarImagesManager({
 
       router.refresh();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to set main image',
-      );
+      setError(err instanceof Error ? err.message : 'Failed to set main image');
     } finally {
       setLoading(false);
     }
@@ -177,9 +171,7 @@ export default function DealerCarImagesManager({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
-          dragOver
-            ? 'border-blue-400 bg-blue-50'
-            : 'border-zinc-300 bg-zinc-50'
+          dragOver ? 'border-blue-400 bg-blue-50' : 'border-zinc-300 bg-zinc-50'
         } ${loading ? 'opacity-50' : ''}`}
       >
         <input

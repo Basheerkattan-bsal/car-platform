@@ -73,6 +73,8 @@ export default function DealerCarCard({ car }: Props) {
             carId={car._id}
             isPublished={Boolean(car.isPublished)}
           />
+
+          <DeleteCarButton carId={car._id} />
         </div>
       </div>
     </article>
