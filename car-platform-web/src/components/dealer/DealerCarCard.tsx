@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { Car } from '@/types/car';
 import PublishToggleButton from './PublishToggleButton';
 import DeleteCarButton from './DeleteCarButton';
@@ -17,10 +20,32 @@ function formatPrice(price: number) {
 }
 
 export default function DealerCarCard({ car }: Props) {
+  const router = useRouter();
   const isPublished = Boolean(car.isPublished);
+  const detailsHref = `/dealer/cars/${car._id}`;
+
+  function openDetails() {
+    router.push(detailsHref);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLElement>) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (e.target instanceof HTMLElement && e.target.closest('a, button')) {
+      return;
+    }
+
+    e.preventDefault();
+    openDetails();
+  }
 
   return (
-    <article className='flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm'>
+    <article
+      role='link'
+      tabIndex={0}
+      onClick={openDetails}
+      onKeyDown={handleKeyDown}
+      className='flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2'
+    >
       <CarImageSlider
         images={car.images || []}
         mainImage={car.mainImage}
@@ -29,7 +54,12 @@ export default function DealerCarCard({ car }: Props) {
       <div className='flex flex-1 flex-col space-y-4 p-5'>
         <div className='flex items-start justify-between gap-4'>
           <div>
-            <h3 className='text-lg font-semibold text-zinc-950'>{car.title}</h3>
+            <Link
+              href={detailsHref}
+              className='text-lg font-semibold text-zinc-950 hover:underline'
+            >
+              {car.title}
+            </Link>
 
             <p className='mt-1 text-sm text-zinc-600'>
               {car.brand ?? 'Unknown brand'}
@@ -52,8 +82,15 @@ export default function DealerCarCard({ car }: Props) {
           {formatPrice(car.price)}
         </p>
 
-        <div className='mt-auto space-y-2'>
-          <div className='grid gap-2 sm:grid-cols-2'>
+        <div className='mt-auto space-y-2' onClick={e => e.stopPropagation()}>
+          <div className='grid gap-2 sm:grid-cols-3'>
+            <Link
+              href={detailsHref}
+              className='rounded-xl border border-zinc-300 px-4 py-2 text-center text-sm font-medium text-zinc-900 hover:bg-zinc-100'
+            >
+              Details
+            </Link>
+
             <Link
               href={`/dealer/cars/${car._id}/edit`}
               className='rounded-xl border border-zinc-300 px-4 py-2 text-center text-sm font-medium text-zinc-900 hover:bg-zinc-100'

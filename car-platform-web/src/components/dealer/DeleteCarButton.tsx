@@ -14,7 +14,9 @@ export default function DeleteCarButton({ carId }: Props) {
 
   const [loading, setLoading] = useState(false);
 
-  async function handleDelete() {
+  async function handleDelete(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+
     const confirmed = window.confirm(
       'Are you sure you want to delete this Car?',
     );

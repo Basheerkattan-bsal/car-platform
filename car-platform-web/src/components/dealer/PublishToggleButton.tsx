@@ -15,7 +15,9 @@ export default function PublishToggleButton({ carId, isPublished }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  async function handleToggle() {
+  async function handleToggle(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+
     try {
       setLoading(true);
 

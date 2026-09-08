@@ -9,9 +9,20 @@ type UpdateDealerCarInput = {
   year: number;
   mileage: number;
   owner: 'Dealer' | 'Private';
-  condition: string;
-  description: 'Smoker' | 'Non-Smoker';
-  images: string[];
+  condition: 'Smoker' | 'Non-Smoker';
+  description: string;
+};
+
+type CreateDealerCarInput = {
+  title: string;
+  price: number;
+  brand: string;
+  year: number;
+  mileage: number;
+  model: string;
+  description: string;
+  owner: 'Dealer' | 'Private';
+  condition: 'Smoker' | 'Non-Smoker';
 };
 
 export async function updateDealerCarBrowser(
@@ -109,4 +120,24 @@ export async function deleteDealerCarBrowser(carId: string) {
   }
 
   return data;
+}
+
+
+export async function createDealerCarBrowser(payload: CreateDealerCarInput) {
+  const res = await fetch(`${API_BASE_URL}/dealer/cars`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || 'Failed to create Car');
+  }
+
+  return data.data;
 }

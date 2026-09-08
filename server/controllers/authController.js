@@ -6,12 +6,9 @@ const jwt = require('jsonwebtoken');
 
 const { signToken, cookieOptions } = require('../utils/jwt');
 
-const DealerProfile = require('../models/DealerProfile');
-
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role, companyName, phone, address } =
-      req.body;
+    const { name, email, password, role } = req.body;
 
     // Check if the user exists:
     const userExists = await User.findOne({ email });
@@ -19,16 +16,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'User is already signed up' });
     }
 
-    const dealerRole = role || 'buyer';
-
-    if (dealerRole === 'dealer') {
-      if (!companyName || !phone || !address) {
-        return res.status(400).json({
-          success: false,
-          message: 'Dealer requires Company name, address, and phone',
-        });
-      }
-    }
+    const accountRole = role === 'dealer' ? 'dealer' : 'buyer';
 
     /*  // Hash password:
     const salt = await bcrypt.genSalt(10);
@@ -39,18 +27,8 @@ exports.register = async (req, res) => {
       name,
       password,
       email,
-      role: role || 'buyer',
+      role: accountRole,
     });
-
-    if (dealerRole === 'dealer') {
-      await DealerProfile.create({
-        user: user._id,
-        companyName,
-        phone,
-        address,
-        status: 'pending',
-      });
-    }
 
     const token = signToken({ id: user._id.toString(), role: user.role });
     res.cookie('access_token', token, cookieOptions());

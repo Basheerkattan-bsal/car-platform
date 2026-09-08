@@ -50,7 +50,7 @@ export async function getMe(): Promise<AuthUser> {
 }
 
 export async function logout(): Promise<void> {
-  await api<{ success: Boolean; message?: string }>('/auth/logout', {
+  await api<{ success: boolean; message?: string }>('/auth/logout', {
     method: 'POST',
   });
 }

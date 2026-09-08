@@ -36,9 +36,9 @@ export default function CarCard({ car, action }: CarCardProps) {
   const mileageText = formatMileage(car.mileage);
 
   return (
-    <article className='group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 transition hover:border-white/20 hover:bg-white/[0.07]'>
+    <article className='group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.07] hover:shadow-lg'>
       <Link href={carHref} className='block'>
-        <div className='h-56 overflow-hidden bg-black/30'>
+        <div className='relative h-56 overflow-hidden bg-black/30'>
           {imageSrc ? (
             <img
               src={imageSrc}

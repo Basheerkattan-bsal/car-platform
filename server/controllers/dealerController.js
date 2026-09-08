@@ -124,14 +124,11 @@ exports.getMyStats = async (req, res) => {
       .select('status')
       .maxTimeMS(5000);
 
-    if (!profile) {
-      return res.status(404).json({
-        success: false,
-        message: 'Dealer not found',
-      });
-    }
-    const [totalCars, latestCars] = await Promise.all([
+    const dealerStatus = profile?.status || 'pending';
+    const [totalCars, publishedCars, draftCars, latestCars] = await Promise.all([
       Car.countDocuments({ dealer: req.user.id }),
+      Car.countDocuments({ dealer: req.user.id, isPublished: true }),
+      Car.countDocuments({ dealer: req.user.id, isPublished: { $ne: true } }),
       Car.find({ dealer: req.user.id })
         .sort({ createdAt: -1 })
         .limit(5)
@@ -141,9 +138,11 @@ exports.getMyStats = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: {
-        dealerStatus: profile.status,
-        canPostCars: profile.status === 'approved',
+        dealerStatus,
+        canPostCars: dealerStatus === 'approved',
         totalCars,
+        publishedCars,
+        draftCars,
         latestCars,
       },
     });

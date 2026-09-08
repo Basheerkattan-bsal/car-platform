@@ -273,6 +273,16 @@ export default function DealerCarImagesManager({
           </div>
         )}
       </div>
+
+      <div className='border-t border-zinc-200 pt-6'>
+        <button
+          type='button'
+          onClick={() => router.push('/dealer/cars')}
+          className='w-full rounded-xl bg-zinc-950 px-4 py-3 text-sm font-medium text-white hover:bg-zinc-800'
+        >
+          Save and back to menu
+        </button>
+      </div>
     </div>
   );
 }

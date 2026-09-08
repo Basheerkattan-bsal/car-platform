@@ -4,6 +4,7 @@ const createCarSchema = z.object({
   title: z.string().trim().min(3, 'Title must be at least 3 characters'),
   price: z.number().positive('Price must be positive'),
   brand: z.string().trim().min(1, 'Brand is required'),
+  model: z.string().trim().min(1, 'Model is required'),
   year: z
     .number()
     .int()
@@ -12,6 +13,7 @@ const createCarSchema = z.object({
   mileage: z.number().int().nonnegative('Mileage cannot be negative'),
   owner: z.enum(['Dealer', 'Private']),
   condition: z.enum(['Smoker', 'Non-Smoker']),
+  description: z.string().trim().optional(),
 });
 
 const updateCarSchema = z
@@ -23,6 +25,7 @@ const updateCarSchema = z
       .optional(),
     price: z.number().positive('Price must be positive').optional(),
     brand: z.string().trim().min(1, 'Brand is required').optional(),
+    model: z.string().trim().min(1, 'Model is required').optional(),
     year: z
       .number()
       .int()
@@ -34,7 +37,8 @@ const updateCarSchema = z
       .nonnegative('Mileage cannot b negative')
       .optional(),
     owner: z.enum(['Dealer', 'Private']).optional(),
-    condition: z.enum(['Smoker', 'Non-Smoker']),
+    condition: z.enum(['Smoker', 'Non-Smoker']).optional(),
+    description: z.string().trim().optional(),
   })
   .strict();
 

@@ -5,7 +5,7 @@ const dealerProfileSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      require: true,
+      required: true,
       unique: true,
     },
     companyName: {
@@ -43,7 +43,7 @@ const dealerProfileSchema = new mongoose.Schema(
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model('DealerProfile', dealerProfileSchema);

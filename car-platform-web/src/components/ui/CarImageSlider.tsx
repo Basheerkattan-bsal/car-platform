@@ -96,6 +96,7 @@ export default function CarImageSlider({ images, mainImage, alt }: Props) {
             type='button'
             onClick={e => {
               e.preventDefault(); // prevents card link navigation if wrapped in <Link>
+              e.stopPropagation();
               prev();
             }}
             className='absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors'
@@ -111,6 +112,7 @@ export default function CarImageSlider({ images, mainImage, alt }: Props) {
             type='button'
             onClick={e => {
               e.preventDefault();
+              e.stopPropagation();
               next();
             }}
             className='absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70 transition-colors'
@@ -130,6 +132,7 @@ export default function CarImageSlider({ images, mainImage, alt }: Props) {
                 type='button'
                 onClick={e => {
                   e.preventDefault();
+                  e.stopPropagation();
                   setCurrentIndex(i);
                 }}
                 className={`h-1.5 w-1.5 rounded-full transition-colors ${

@@ -5,30 +5,6 @@ const User = require('../models/User');
 const Car = require('../models/Car');
 const Booking = require('../models/Booking');
 
-exports.getAllDealers = async (req, res) => {
-  try {
-    const filter = {};
-    if (req.query.status) {
-      filter.status = req.query.status;
-    }
-
-    const dealers = await DealerProfile.find()
-      .populate('user', 'name email role')
-      .sort({ createdAt: -1 });
-
-    return res.status(200).json({
-      success: true,
-      count: dealers.length,
-      date: dealers,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
 exports.approveDealer = async (req, res) => {
   try {
     const dealerId = req.params.id.trim();
@@ -193,7 +169,7 @@ exports.reactivateDealer = async (req, res) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
 
     if (!updated) {
@@ -350,7 +326,7 @@ exports.getAllCarsAdmin = async (req, res) => {
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
     const limit = Math.min(
       Math.max(parseInt(req.query.limit || '10', 10), 1),
-      50
+      50,
     );
     const skip = (page - 1) * limit;
 
@@ -401,7 +377,7 @@ exports.unpublishCarAdmin = async (req, res) => {
     const updated = await Car.findOneAndUpdate(
       { _id: carId },
       { $set: { isPublished: false } },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     ).populate('dealer', 'name email');
 
     if (!updated) {
@@ -429,7 +405,7 @@ exports.getAllDealersAdmin = async (req, res) => {
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
     const limit = Math.min(
       Math.max(parseInt(req.query.limit || '10', 10), 1),
-      50
+      50,
     );
     const skip = (page - 1) * limit;
 
@@ -479,7 +455,7 @@ exports.approveBookingAdmin = async (req, res) => {
     const updated = await Booking.findByIdAndUpdate(
       bookingId,
       { $set: { status: 'approved' } },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     )
       .populate('user', 'name email role')
       .populate('service', 'title price durationMinutes');
@@ -525,7 +501,7 @@ exports.cancelBookingAdmin = async (req, res) => {
           cancelReason: reason,
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     )
       .populate('user', 'name email role')
       .populate('service', 'title price, durationMinutes');
@@ -559,7 +535,7 @@ exports.getAllBookingsAdmin = async (req, res) => {
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
     const limit = Math.min(
       Math.max(parseInt(req.query.limit || '10', 10), 1),
-      50
+      50,
     );
     const skip = (page - 1) * limit;
 

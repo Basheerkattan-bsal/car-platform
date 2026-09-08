@@ -13,15 +13,23 @@ type Dealer = {
   role: 'buyer' | 'dealer' | 'admin';
 };
 
+type DealerProfile = {
+  companyName?: string;
+  phone?: string;
+  address?: string;
+};
+
 type Car = {
   _id: string;
   title: string;
   price: number;
   brand?: string;
+  model?: string;
   year?: number;
   mileage?: number;
   owner?: string;
   condition?: string;
+  description?: string;
   mainImage?: string;
   images?: string[];
   dealer?: string | Dealer;
@@ -62,9 +70,13 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
 
   const car = res.data;
   const similarCars = Array.isArray(res.similarCars) ? res.similarCars : [];
+  const dealerProfile: DealerProfile | null = res.dealerProfile ?? null;
   const dealer =
     car.dealer && typeof car.dealer === 'object' ? car.dealer : null;
   const backHref = buildBackHref(resolveSearchParams);
+  const firstRegistration = car.year ? `01/${car.year}` : null;
+  const monthlyPayment = Math.max(1, Math.round((car.price * 0.85) / 60));
+  const downPayment = Math.round(car.price * 0.15);
 
   // Favorite logic
 
@@ -102,11 +114,34 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
             </div>
           </div>
 
-          <div className='text-2xl font-semibold'>
+          <div className='text-3xl font-semibold'>
             {car.price.toLocaleString()} €
           </div>
         </div>
       </header>
+
+      <section className='grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
+        {car.mileage !== undefined ? (
+          <SummaryFact
+            icon='KM'
+            label='Mileage'
+            value={`${car.mileage.toLocaleString()} km`}
+          />
+        ) : null}
+        {firstRegistration ? (
+          <SummaryFact
+            icon='FR'
+            label='First registration'
+            value={firstRegistration}
+          />
+        ) : null}
+        {car.condition ? (
+          <SummaryFact icon='CO' label='Condition' value={car.condition} />
+        ) : null}
+        {car.owner ? (
+          <SummaryFact icon='OW' label='Owner' value={car.owner} />
+        ) : null}
+      </section>
 
       <div className='grid gap-6 lg:grid-cols-3'>
         {/* Left: gallery */}
@@ -121,53 +156,119 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
 
         {/* Right: summary / CTA */}
         <aside className='lg:col-span-1'>
-          <div className='rounded-2xl border p-4 lg:sticky lg:top-6'>
-            <div className='text-sm font-medium opacity-70'>Dealer</div>
+          <div className='space-y-4 lg:sticky lg:top-6'>
+            <section className='rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm'>
+              <div className='text-sm font-medium text-zinc-500'>Dealer</div>
 
-            {dealer ? (
-              <div className='mt-4 space-y-3'>
-                <div>
-                  <div className='text-xs opacity-60'>Name</div>
-                  <div className='font-medium'>{dealer.name}</div>
-                </div>
+              {dealer ? (
+                <div className='mt-4 space-y-3'>
+                  <div>
+                    <div className='text-xs text-zinc-500'>Company</div>
+                    <div className='font-medium text-zinc-950'>
+                      {dealerProfile?.companyName || dealer.name}
+                    </div>
+                  </div>
 
-                <div>
-                  <div className='text-xs opacity-60'>Email</div>
-                  <div className='font-medium break-all'>{dealer.email}</div>
-                </div>
+                  {dealerProfile?.address ? (
+                    <div>
+                      <div className='text-xs text-zinc-500'>Address</div>
+                      <div className='font-medium text-zinc-950'>
+                        {dealerProfile.address}
+                      </div>
+                    </div>
+                  ) : null}
 
-                <div>
-                  <div className='text-xs opacity-60'>Role</div>
-                  <div className='font-medium capitalize'>{dealer.role}</div>
+                  <div>
+                    <div className='text-xs text-zinc-500'>Email</div>
+                    <div className='font-medium break-all text-zinc-950'>
+                      {dealer.email}
+                    </div>
+                  </div>
                 </div>
+              ) : (
+                <div className='mt-4 text-sm text-zinc-600'>
+                  Dealer info not available
+                </div>
+              )}
+
+              <div className='mt-6 space-y-3'>
+                {dealer?.email ? (
+                  <a
+                    href={`mailto:${dealer.email}?subject=${encodeURIComponent(
+                      `Question about ${car.title}`
+                    )}`}
+                    className='block w-full rounded-xl bg-zinc-950 px-4 py-3 text-center text-sm font-medium text-white hover:bg-zinc-800'
+                  >
+                    Send email
+                  </a>
+                ) : null}
+
+                {dealerProfile?.phone ? (
+                  <a
+                    href={`tel:${dealerProfile.phone}`}
+                    className='block w-full rounded-xl border border-zinc-300 px-4 py-3 text-center text-sm font-medium text-zinc-950 hover:bg-zinc-100'
+                  >
+                    Show number: {dealerProfile.phone}
+                  </a>
+                ) : (
+                  <button
+                    type='button'
+                    className='w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm font-medium text-zinc-500'
+                    disabled
+                  >
+                    Phone number not available
+                  </button>
+                )}
               </div>
-            ) : (
-              <div className='mt-4 text-sm opacity-70'>
-                Dealer info not available
-              </div>
-            )}
+            </section>
 
-            <div className='mt-6 border-t pt-4'>
-              <div className='text-sm font-medium opacity-70'>Quick facts</div>
+            <section className='rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm'>
+              <div className='text-sm font-medium text-red-700'>Financing</div>
+              <div className='mt-2 text-2xl font-semibold text-zinc-950'>
+                from {monthlyPayment.toLocaleString()} € / month
+              </div>
+              <p className='mt-2 text-sm text-zinc-700'>
+                Example estimate with {downPayment.toLocaleString()} € down
+                payment over 60 months.
+              </p>
+              <button
+                type='button'
+                className='mt-4 w-full rounded-xl bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700'
+              >
+                Request financing
+              </button>
+            </section>
+
+            <section className='rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm'>
+              <div className='text-sm font-medium text-zinc-500'>
+                Quick facts
+              </div>
 
               <ul className='mt-4 space-y-2 text-sm'>
                 {car.brand ? (
                   <li className='flex justify-between gap-4'>
-                    <span className='opacity-70'>Brand</span>
+                    <span className='text-zinc-500'>Brand</span>
                     <span className='font-medium'>{car.brand}</span>
+                  </li>
+                ) : null}
+
+                {car.model ? (
+                  <li className='flex justify-between gap-4'>
+                    <span className='text-zinc-500'>Model</span>
+                    <span className='font-medium'>{car.model}</span>
                   </li>
                 ) : null}
 
                 {car.year ? (
                   <li className='flex justify-between gap-4'>
-                    <span className='opacity-70'>Year</span>
+                    <span className='text-zinc-500'>First registration</span>
                     <span className='font-medium'>{car.year}</span>
                   </li>
                 ) : null}
 
                 {car.mileage !== undefined ? (
                   <li className='flex justify-between gap-4'>
-                    <span className='opacity-70'>Mileage</span>
+                    <span className='text-zinc-500'>Mileage</span>
                     <span className='font-medium'>
                       {car.mileage.toLocaleString()} km
                     </span>
@@ -176,61 +277,75 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
 
                 {car.owner ? (
                   <li className='flex justify-between gap-4'>
-                    <span className='opacity-70'>Owner</span>
+                    <span className='text-zinc-500'>Owner</span>
                     <span className='font-medium'>{car.owner}</span>
                   </li>
                 ) : null}
 
                 {car.condition ? (
                   <li className='flex justify-between gap-4'>
-                    <span className='opacity-70'>Condition</span>
+                    <span className='text-zinc-500'>Condition</span>
                     <span className='font-medium'>{car.condition}</span>
                   </li>
                 ) : null}
               </ul>
-            </div>
+            </section>
 
-            <div className='mt-6 space-y-3'>
+            <section className='rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm'>
               <FavoriteButton
                 carId={car._id}
                 initialIsFavorite={initialIsFavorite}
               />
 
               <RemoveFavoriteButton carId={car._id} />
-              <button
-                type='button'
-                className='w-full rounded-xl border px-4 py-3 text-sm font-medium hover:bg-black/5'
-              >
-                Contact dealer
-              </button>
-
-              <button
-                type='button'
-                className='w-full rounded-xl border px-4 py-3 text-sm font-medium hover:bg-black/5'
-              >
-                Book service
-              </button>
-            </div>
+            </section>
           </div>
         </aside>
       </div>
 
+      {car.description ? (
+        <section className='rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm'>
+          <div className='mb-3 text-sm font-medium text-zinc-500'>
+            Description
+          </div>
+          <p className='whitespace-pre-line text-sm leading-6 text-zinc-800'>
+            {car.description}
+          </p>
+        </section>
+      ) : null}
+
       {/* Full details */}
-      <section className='rounded-2xl border p-4'>
-        <div className='mb-4 text-sm font-medium'>Full details</div>
+      <section className='rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm'>
+        <div className='mb-4 text-sm font-medium text-zinc-500'>
+          Full details
+        </div>
 
         <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-          {car.brand ? <SpecItem label='Brand' value={car.brand} /> : null}
-          {car.year ? <SpecItem label='Year' value={car.year} /> : null}
+          {car.brand ? (
+            <SpecItem icon='BR' label='Brand' value={car.brand} />
+          ) : null}
+          {car.model ? (
+            <SpecItem icon='MO' label='Model' value={car.model} />
+          ) : null}
+          {firstRegistration ? (
+            <SpecItem
+              icon='FR'
+              label='First registration'
+              value={firstRegistration}
+            />
+          ) : null}
           {car.mileage !== undefined ? (
             <SpecItem
+              icon='KM'
               label='Mileage'
               value={`${car.mileage.toLocaleString()} km`}
             />
           ) : null}
-          {car.owner ? <SpecItem label='Owner' value={car.owner} /> : null}
+          {car.owner ? (
+            <SpecItem icon='OW' label='Owner' value={car.owner} />
+          ) : null}
           {car.condition ? (
-            <SpecItem label='Condition' value={car.condition} />
+            <SpecItem icon='CO' label='Condition' value={car.condition} />
           ) : null}
         </div>
       </section>
@@ -273,11 +388,46 @@ export default async function CarDetailsPage({ params, searchParams }: Props) {
   );
 }
 
-function SpecItem({ label, value }: { label: string; value: string | number }) {
+function SummaryFact({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value: string | number;
+}) {
   return (
-    <div className='rounded-xl border p-4'>
-      <div className='text-xs opacity-60'>{label}</div>
-      <div className='mt-1 font-medium'>{value}</div>
+    <div className='flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm'>
+      <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-950 text-xs font-semibold text-white'>
+        {icon}
+      </div>
+      <div>
+        <div className='text-xs text-zinc-500'>{label}</div>
+        <div className='font-medium text-zinc-950'>{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function SpecItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div className='flex items-center gap-3 rounded-xl border border-zinc-200 p-4'>
+      <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-700'>
+        {icon}
+      </div>
+      <div>
+        <div className='text-xs text-zinc-500'>{label}</div>
+        <div className='mt-1 font-medium text-zinc-950'>{value}</div>
+      </div>
     </div>
   );
 }

@@ -27,6 +27,11 @@ export type CarsListResponse = {
 export type CarDetailsResponse = {
   success: boolean;
   data: Car;
+  dealerProfile?: {
+    companyName?: string;
+    phone?: string;
+    address?: string;
+  } | null;
   similarCars?: Car[];
 };
 

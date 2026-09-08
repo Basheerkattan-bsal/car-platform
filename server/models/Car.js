@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { boolean } = require('zod');
 
 const carSchema = new mongoose.Schema(
   {
@@ -29,11 +28,18 @@ const carSchema = new mongoose.Schema(
       default: 'Dealer',
       required: true,
     },
+    model: {
+      type: String,
+      required: true,
+    },
     condition: {
       type: String,
       enum: ['Smoker', 'Non-Smoker'],
       default: 'Smoker',
       required: true,
+    },
+    description: {
+      type: String,
     },
     dealer: {
       type: mongoose.Schema.Types.ObjectId, // This will put the id of the dealer
@@ -41,8 +47,8 @@ const carSchema = new mongoose.Schema(
       required: true,
     },
     isPublished: {
-      type: boolean,
-      require: true,
+      type: Boolean,
+      default: false,
     },
     images: {
       type: ['String'],

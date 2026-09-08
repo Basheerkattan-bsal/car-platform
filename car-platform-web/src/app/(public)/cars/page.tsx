@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import CarCard from '@/components/cars/CarCard';
 import { getBrandsServer } from '@/lib/api/car';
 import { getCarsServer } from '@/lib/api/car';
 import { Car } from '@/types/car';
@@ -15,18 +16,6 @@ type Props = {
     sort?: string;
   }>;
 };
-
-function formatPrice(value?: number) {
-  if (typeof value !== 'number') {
-    return 'Price on request';
-  }
-
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 export default async function CarsPage({ searchParams }: Props) {
   const params = (await searchParams) ?? {};
@@ -75,24 +64,7 @@ export default async function CarsPage({ searchParams }: Props) {
 
       <section className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
         {cars.map(car => (
-          <article key={car._id} className='rounded-lg border p-4'>
-            <div className='mb-3 aspect-[4/3] rounded bg-neutral-100' />
-
-            <h3 className='text-lg font-semibold'>{car.title}</h3>
-
-            <p className='mt-1 text-sm text-neutral-600'>
-              {car.brand ?? 'Unknown brand'} . {car.year ?? 'Unknown year'}
-            </p>
-
-            <p className='mt-3 font-medium'>{formatPrice(car.price)}</p>
-
-            <Link
-              href={`/cars/${car._id}`}
-              className='mt-4 inline-block text-sm underline'
-            >
-              View details
-            </Link>
-          </article>
+          <CarCard key={car._id} car={car} />
         ))}
       </section>
 

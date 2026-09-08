@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const {
-  getAllDealers,
   approveDealer,
   rejectDealer,
   suspendDealer,
@@ -21,7 +20,6 @@ const {
 const { protect } = require('../middleware/authMiddleware');
 const { authorize } = require('../middleware/roleMiddleware');
 
-router.get('/dealers', protect, authorize('admin'), getAllDealers);
 router.get('/dealers/:id', protect, authorize('admin'), getDealerById);
 router.get('/stats', protect, authorize('admin'), getAdminStats);
 router.get('/dealers', protect, authorize('admin'), getAllDealersAdmin);
@@ -32,13 +30,13 @@ router.put(
   '/bookings/:id/approve',
   protect,
   authorize('admin'),
-  approveBookingAdmin
+  approveBookingAdmin,
 );
 router.put(
   '/bookings/:id/cancel',
   protect,
   authorize('admin'),
-  cancelBookingAdmin
+  cancelBookingAdmin,
 );
 router.put('/dealers/approve/:id', protect, authorize('admin'), approveDealer);
 router.put('/dealers/reject/:id', protect, authorize('admin'), rejectDealer);
@@ -47,13 +45,13 @@ router.put(
   '/dealers/reactivate/:id',
   protect,
   authorize('admin'),
-  reactivateDealer
+  reactivateDealer,
 );
 router.put(
   '/cars/:id/unpublish',
   protect,
   authorize('admin'),
-  unpublishCarAdmin
+  unpublishCarAdmin,
 );
 
 module.exports = router;

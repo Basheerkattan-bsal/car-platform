@@ -10,26 +10,35 @@ type Props = {
   car: Car;
 };
 
+type FormState = {
+  title: string;
+  price: number;
+  brand: string;
+  model: string;
+  year: number;
+  mileage: number;
+  owner: 'Dealer' | 'Private';
+  description: string;
+  condition: 'Smoker' | 'Non-Smoker';
+};
+
 export default function DealerCarEditForm({ car }: Props) {
   const router = useRouter();
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const [form, setForm] = useState({
-    title: car.title ?? '',
-    price: car.price ?? 0,
-    brand: car.brand ?? '',
-    model: car.model ?? '',
-    year: car.year ?? new Date().getFullYear(),
-    mileage: car.mileage ?? 0,
-    owner: car.owner ?? 'Dealer',
-    condition: car.condition ?? '',
-    description: car.description ?? '',
-    images: car.images ?? [],
+  const [form, setForm] = useState<FormState>({
+    title: car.title,
+    price: car.price,
+    brand: car.brand || '',
+    model: car.model || '',
+    year: car.year || new Date().getFullYear(),
+    mileage: car.mileage,
+    owner: car.owner === 'Private' ? 'Private' : 'Dealer',
+    description: car.description || '',
+    condition: car.condition === 'Smoker' ? 'Smoker' : 'Non-Smoker',
   });
-
-  function updateFiled(key: keyof typeof form, value: string) {
+  function updateField(key: keyof FormState, value: string) {
     setForm(current => ({
       ...current,
       [key]:
@@ -70,7 +79,7 @@ export default function DealerCarEditForm({ car }: Props) {
 
       <input
         value={form.title}
-        onChange={e => updateFiled('title', e.target.value)}
+        onChange={e => updateField('title', e.target.value)}
         className='w-full rounded-xl border border-zinc-300 px-4 py-3'
         placeholder='Title'
       />
@@ -78,22 +87,29 @@ export default function DealerCarEditForm({ car }: Props) {
       <input
         type='number'
         value={form.price}
-        onChange={e => updateFiled('price', e.target.value)}
+        onChange={e => updateField('price', e.target.value)}
         className='w-full rounded-xl border border-zinc-300 px-4 py-3'
         placeholder='Price'
       />
 
       <input
         value={form.brand}
-        onChange={e => updateFiled('brand', e.target.value)}
+        onChange={e => updateField('brand', e.target.value)}
         className='w-full rounded-xl border border-zinc-300 px-4 py-3'
         placeholder='Brand'
       />
 
       <input
+        value={form.model}
+        onChange={e => updateField('model', e.target.value)}
+        className='w-full rounded-xl border border-zinc-300 px-4 py-3'
+        placeholder='Model'
+      />
+
+      <input
         type='number'
         value={form.year}
-        onChange={e => updateFiled('year', e.target.value)}
+        onChange={e => updateField('year', e.target.value)}
         className='w-full rounded-xl border border-zinc-300 px-4 py-3'
         placeholder='Year'
       />
@@ -101,14 +117,14 @@ export default function DealerCarEditForm({ car }: Props) {
       <input
         type='number'
         value={form.mileage}
-        onChange={e => updateFiled('mileage', e.target.value)}
+        onChange={e => updateField('mileage', e.target.value)}
         className='w-full rounded-xl border border-zinc-300 px-4 py-3'
         placeholder='Mileage'
       />
 
       <select
         value={form.owner}
-        onChange={e => updateFiled('owner', e.target.value)}
+        onChange={e => updateField('owner', e.target.value)}
         className='w-full rounded-xl border border-zinc-300 px-4 py-3'
       >
         <option value='Dealer'>Dealer</option>
@@ -117,7 +133,7 @@ export default function DealerCarEditForm({ car }: Props) {
 
       <select
         value={form.condition}
-        onChange={e => updateFiled('condition', e.target.value)}
+        onChange={e => updateField('condition', e.target.value)}
         className='w-full rounded-xl border border-zinc-300 px-4 py-3'
       >
         <option value='Smoker'>Smoker</option>
@@ -127,7 +143,7 @@ export default function DealerCarEditForm({ car }: Props) {
       <button
         type='submit'
         disabled={loading}
-        className='w-full rounded-xl bg-zinc-950 px-4 py-3 text-sm font medium text-white disabled:opacity-60'
+        className='w-full rounded-xl bg-zinc-950 px-4 py-3 text-sm font-medium text-white disabled:opacity-60'
       >
         {loading ? 'Saving...' : 'Save changes'}
       </button>

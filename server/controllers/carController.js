@@ -179,6 +179,13 @@ exports.getCarByIdPublic = async (req, res) => {
       });
     }
 
+    const dealerProfile =
+      car.dealer && car.dealer._id
+        ? await DealerProfile.findOne({ user: car.dealer._id }).select(
+            'companyName phone address'
+          )
+        : null;
+
     const similarFilter = {
       _id: { $ne: car._id },
       isPublished: true,
@@ -197,6 +204,7 @@ exports.getCarByIdPublic = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: car,
+      dealerProfile,
       similarCars,
     });
   } catch (error) {
@@ -317,7 +325,9 @@ exports.deleteCar = async (req, res) => {
 
 exports.getMyCars = async (req, res) => {
   try {
-    const cars = await Car.find({ dealer: req.user.id });
+    const cars = await Car.find({ dealer: req.user.id }).sort({
+      createdAt: -1,
+    });
 
     return res.status(200).json({
       success: true,
@@ -410,10 +420,12 @@ exports.updateMyCar = async (req, res) => {
       'title',
       'price',
       'brand',
+      'model',
       'year',
       'mileage',
       'owner',
       'condition',
+      'description',
     ];
 
     const updates = {};
